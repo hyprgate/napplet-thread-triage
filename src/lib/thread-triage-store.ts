@@ -118,7 +118,8 @@ export function createTriageStore(onUpdate?: () => void): TriageStore {
       ];
       sub = relay.subscribe(
         filters,
-        (event) => {
+        (result) => {
+          const event = result.event as NostrEvent;
           const interaction = interactionFromEvent(event, pubkey);
           if (!interaction) return;
           interactions.set(interaction.id, interaction);
