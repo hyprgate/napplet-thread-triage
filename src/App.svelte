@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { inc as ipc } from '@napplet/sdk';
+  import { intent } from '@napplet/sdk';
+  import { parseIntentResult, type IntentRequest } from '@hyprgate/types';
   import {
-    NOTE_VIEWER_OPEN_TOPIC,
+    createNoteViewerOpenIntentRequest,
     createNoteViewerOpenPayload,
     pubkeyColorStyle,
   } from '@hyprgate/utils';
@@ -42,16 +43,25 @@
     store.setStatus(selected.rootId, status);
   }
 
-  function openSelected(): void {
+  async function invokeNavigation(request: IntentRequest | null): Promise<void> {
+    if (!request) return;
+    try {
+      const result = parseIntentResult(await intent.invoke(request));
+      if (!result || result.archetype !== request.archetype || result.action !== (request.action ?? 'open')) return;
+      if (!result.ok || !result.handled) return;
+    } catch {
+      // Keep the existing no-op behavior when navigation is unavailable.
+    }
+  }
+
+  async function openSelected(): Promise<void> {
     if (!selected) return;
     const payload = createNoteViewerOpenPayload({
       target: { type: 'event', id: selected.rootId },
       source: { napplet: 'thread-triage' },
       behavior: { focus: true, newWindow: true },
     });
-    if (payload) {
-      ipc.emit(NOTE_VIEWER_OPEN_TOPIC, [], JSON.stringify(payload));
-    }
+    await invokeNavigation(payload ? createNoteViewerOpenIntentRequest(payload, { behavior: payload.behavior }) : null);
   }
 </script>
 
