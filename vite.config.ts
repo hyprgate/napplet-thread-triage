@@ -9,7 +9,7 @@ export default defineConfig({
     svelte(),
     nip5aManifest({
       nappletType: 'thread-triage',
-      requires: ['identity', 'relay', 'inc', 'storage'],
+      requires: ['identity', 'relay', 'inc', 'storage', 'resource'],
       optional: ['theme'],
       icon: { data: readFileSync(new URL('./icon.png', import.meta.url)), mimeType: 'image/png' },
       artifactMode: 'single-file',

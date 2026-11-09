@@ -4,46 +4,24 @@
 > Do not push commits to this standalone napplet repository; direct changes are overwritten by Hyprgate's mirror workflow.
 <!-- HYPRGATE NAPPLET MIRROR NOTICE:END -->
 
-# napplet-thread-triage
+# Thread Triage
 
-[![CI](https://github.com/hyprgate/napplet-thread-triage/actions/workflows/ci.yml/badge.svg)](https://github.com/hyprgate/napplet-thread-triage/actions/workflows/ci.yml)
+Work through the replies, comments, reactions, zaps, reposts, quotes and mentions on
+your notes, one thread at a time. Threads you mark as reviewed or deferred leave the
+review list until someone new shows up in them.
 
-Forkable source repository for the Hyprgate built-in napplet currently packaged as `@hyprgate/napp-thread-triage`.
+The source lives in the Hyprgate monorepo at `napplets/thread-triage`. The standalone
+`hyprgate/napplet-thread-triage` repository is a generated, read-only mirror, so send
+changes to [hyprgate/web](https://github.com/hyprgate/web).
 
-This repository was split from `hyprgate/gui` and is mounted back into the parent checkout as `napplets/thread-triage`.
-It still expects the parent workspace when built through Hyprgate because shared `@hyprgate/*` packages remain workspace dependencies.
+## Developing
 
-## Parent checkout
+Run these from the root of a Hyprgate checkout so workspace dependencies resolve:
 
 ```bash
-git clone --recurse-submodules git@github.com:hyprgate/gui.git
-cd gui
 pnpm install --frozen-lockfile
-pnpm --filter @hyprgate/napp-thread-triage build
+pnpm --filter ./napplets/thread-triage paja        # Kehto Paja plus the Vite dev server
+pnpm --filter ./napplets/thread-triage test
+pnpm --filter ./napplets/thread-triage type-check
+pnpm --filter ./napplets/thread-triage conformance # builds, then checks dist/
 ```
-
-## Paja runtime
-
-```bash
-pnpm --filter @hyprgate/napp-thread-triage paja
-```
-
-This starts Kehto Paja and the napplet's Vite dev server together, using
-the port configured in `vite.config.ts`.
-
-## Testing
-
-Run these checks from a Hyprgate parent checkout so workspace dependencies resolve:
-
-```bash
-git clone --recurse-submodules git@github.com:hyprgate/gui.git
-cd gui
-pnpm install --frozen-lockfile
-pnpm --filter @hyprgate/napp-thread-triage conformance
-pnpm --filter @hyprgate/napp-thread-triage test
-pnpm --filter @hyprgate/napp-thread-triage build
-```
-
-The `conformance` script builds the napplet and runs `@napplet/conformance-cli` against `dist/`. CI runs the same conformance, unit test, and build checks for every push and pull request.
-
-CI runs from the standalone napplet repository but checks out `hyprgate/gui` to resolve private `workspace:*` packages. Configure `HYPRGATE_GUI_CHECKOUT_TOKEN` with read access to `hyprgate/gui` before enabling GitHub Actions.
